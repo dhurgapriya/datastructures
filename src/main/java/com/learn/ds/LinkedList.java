@@ -274,8 +274,12 @@ public class LinkedList {
 		Node node = list.search(data);
 		if (node != null) {
 			Node temp = node.next;
-			node.next = temp.next;
-			node.data = temp.data;
+			if (temp != null) {
+				node.next = temp.next;
+				node.data = temp.data;
+			} else {
+				node.next = null;
+			}
 		}
 		list.printLinkedList();
 	}
@@ -320,16 +324,22 @@ public class LinkedList {
 			return;
 		}
 		Node head = list.head;
-		Node p1 = list.head.next;
-		list.head = p1;
-		while (p1 != null) {
-			if (p1.next == null) {
-				Node node = new Node(head.data, null);
-				p1.next = node;
-				break;
-			}
-			p1 = p1.next;
-		}
+		// increment the head
+		list.head = list.head.next != null ? list.head.next : head;
+		// move the head to tail;
+		list.tail.next = head;
+		// increment the tail
+		list.tail = head;
+		list.tail.next = null;
+//		Node p1 = list.head.next;
+//		while (p1 != null) {
+//			if (p1.next == null) {
+//				Node node = new Node(head.data, null);
+//				p1.next = node;
+//				break;
+//			}
+//			p1 = p1.next;
+//		}
 		list.printLinkedList();
 	}
 
@@ -387,9 +397,142 @@ public class LinkedList {
 		return true;
 	}
 
-	public static void main(String[] args) throws Exception {
-		LinkedList list = new LinkedList();
+	public static void oddEvenLinkedList(LinkedList list) {
+		if (list.isEmpty()) {
+			return;
+		}
+		Node p1 = list.head;
+		Node p2 = list.head.next;
+		Node evenFirst = p2;
+		Node oddLast = null;
+		while (p2 != null) {
+			Node temp = p2.next;
+			if (temp == null) {
+				oddLast = p1;
+				break;
+			}
+			p1.next = temp;
+			p2.next = temp.next;
+			p1 = p1.next != null ? p1.next : p1;
+			p2 = p2.next != null ? p2.next : p2;
+		}
+		oddLast.next = evenFirst;
+		list.printLinkedList();
+	}
 
+	public static void rotateLinkedListKtimes(int k, LinkedList list) {
+		int length = lengthOfLinkedList(list);
+		if (list.isEmpty() || length == k || k <= 0) {
+			list.printLinkedList();
+			return;
+		}
+		k = k > length ? k % length : k;
+		Node n = list.head;
+		list.tail.next = n;
+		for (int i = 0; i < k; i++) {
+			list.head = list.head.next;
+			if (i == k - 1) {
+				n.next = null;
+			} else {
+				n = n.next;
+			}
+		}
+		list.tail = n;
+		list.printLinkedList();
+
+//		list.tail.next = n;
+//		for (int i = 0; i < k; i++) {
+//			if (i == k - 1) {
+//				n.next = null;
+//			} else {
+//				n = n.next;
+//			}
+//		}
+//		list.tail = n;
+
+	}
+
+	public static LinkedList addLinkedLists(LinkedList a, LinkedList b) {
+		LinkedList result = new LinkedList();
+		if (a.isEmpty() && b.isEmpty()) {
+			return result;
+		}
+		if (a.isEmpty()) {
+			return b;
+		}
+		if (b.isEmpty()) {
+			return a;
+		}
+		int lenA = lengthOfLinkedList(a);
+		int lenB = lengthOfLinkedList(b);
+		if (lenA == lenB) {
+			int carry = sumOfNodes(a.head, b.head, result);
+			if (carry > 0) {
+				result.insertAtHead(carry);
+			}
+			result.printLinkedList();
+			return result;
+		}
+		if (lenB > lenA) {
+			LinkedList temp = a;
+			a = b;
+			b = temp;
+		}
+		int k = lenA - lenB;
+		Node n = a.head;
+		for (int i = 0; i < k; i++) {
+			a.head = a.head.next;
+		}
+		int carry = sumOfNodes(a.head, b.head, result);
+		carry = sumOfAdditionalNodes(carry, result, n, a.head);
+		if (carry > 0) {
+			result.insertAtHead(carry);
+		}
+		result.printLinkedList();
+		return result;
+	}
+
+	public static int sumOfAdditionalNodes(int c, LinkedList result, Node n, Node x) {
+		if (n == x) {
+			return -1;
+		}
+		int carry = sumOfAdditionalNodes(c, result, n.next, x);
+		int sum = carry == -1 ? n.data + c : n.data + carry;
+		carry = sum / 10;
+		sum = sum % 10;
+		result.insertAtHead(sum);
+		return carry;
+	}
+
+	public static int sumOfNodes(Node x, Node y, LinkedList result) {
+		if (x == null) {
+			return 0;
+		}
+		int carry = sumOfNodes(x.next, y.next, result);
+		int sum = x.data + y.data + carry;
+		carry = sum / 10;
+		sum = sum % 10;
+		result.insertAtHead(sum);
+		return carry;
+	}
+
+	public static void main(String[] args) throws Exception {
+		//add two LinkedList and return a new LinkedList with sum
+		LinkedList a = new LinkedList();
+		a.insertAtTail(9);
+		a.insertAtTail(9);
+		a.insertAtTail(8);
+		a.insertAtTail(2);
+		a.insertAtTail(3);
+		a.insertAtTail(4);
+		LinkedList b = new LinkedList();
+		b.insertAtTail(9);
+		b.insertAtTail(2);
+		b.insertAtTail(3);
+		b.insertAtTail(9);
+		addLinkedLists(a, b);
+
+		LinkedList list = new LinkedList();
 		list.insertAtTail(1);
 		list.insertAtTail(2);
 		list.insertAtTail(3);
@@ -397,23 +540,16 @@ public class LinkedList {
 		list.insertAtTail(5);
 		list.insertAtTail(6);
 		list.insertAtTail(7);
-		list.insertAtTail(5);
 		list.insertAtTail(8);
 		list.insertAtTail(9);
 		list.insertAtTail(10);
-
 		list.printLinkedList();
-		// Check if LinkedList is palindrome
-		isLinkedListPalindrom(list);
-		LinkedList palindrom = new LinkedList();
-		palindrom.insertAtTail(1);
-		palindrom.insertAtTail(2);
-		palindrom.insertAtTail(3);
-		palindrom.insertAtTail(3);
-		palindrom.insertAtTail(2);
-		palindrom.insertAtTail(1);
-		isLinkedListPalindrom(palindrom);
+		// Rotate a LinkedList for given k
+		rotateLinkedListKtimes(12, list);
 
+		// Arrange all odd nodes first and even nodes in the last
+		oddEvenLinkedList(list);
+		// Move all occurrence of a element to the end of the LinkedList
 
 		// Move the first element of the LinkedList to the end
 		moveFirstNodeToEnd(list);
@@ -449,7 +585,7 @@ public class LinkedList {
 		deleteDuplicateElements(list);
 
 		// does linkedlist has loop
-		System.out.println(doesLinkedListHasLoop(list));
+		doesLinkedListHasLoop(list);
 		LinkedList ll = new LinkedList();
 		Node n1 = new Node(1, null);
 		Node n2 = new Node(2, null);
@@ -464,8 +600,18 @@ public class LinkedList {
 		n4.next = n5;
 		n5.next = n6;
 		n6.next = n2;
-		System.out.println(doesLinkedListHasLoop(ll));
 		deleteLoopInLinkedList(ll);
+
+		// Check if LinkedList is palindrome
+		// isLinkedListPalindrom(list);
+		LinkedList palindrom = new LinkedList();
+		palindrom.insertAtTail(1);
+		palindrom.insertAtTail(2);
+		palindrom.insertAtTail(3);
+		palindrom.insertAtTail(3);
+		palindrom.insertAtTail(2);
+		palindrom.insertAtTail(1);
+		isLinkedListPalindrom(palindrom);
 
 		// delete a linked list
 		deleteLinkedList(ll);
