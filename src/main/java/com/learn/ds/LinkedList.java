@@ -135,6 +135,36 @@ public class LinkedList {
 		System.out.println();
 	}
 
+	public static void printOddNodes(LinkedList list) {
+		if (list.isEmpty()) {
+			return;
+		}
+		Node p1 = list.head;
+		while (p1 != null) {
+			System.out.print(p1.data);
+			p1 = p1.next != null ? p1.next.next : null;
+			if (p1 != null) {
+				System.out.print("->");
+			}
+		}
+		System.out.println();
+	}
+
+	public static void printEvenNodes(LinkedList list) {
+		if (list.isEmpty()) {
+			return;
+		}
+		Node p1 = list.head.next;
+		while (p1 != null) {
+			System.out.print(p1.data);
+			p1 = p1.next != null ? p1.next.next : null;
+			if (p1 != null) {
+				System.out.print("->");
+			}
+		}
+		System.out.println();
+	}
+
 	public static Node middleOfLinkedList(LinkedList list) {
 		if (list.isEmpty()) {
 			return null;
@@ -266,15 +296,100 @@ public class LinkedList {
 		list.printLinkedList();
 	}
 
+	public static void removeEvenNumberFromLinkedList(LinkedList list) {
+		if (list.isEmpty()) {
+			return;
+		}
+		while (list.head.data % 2 == 0) {
+			list.head = list.head.next;
+		}
+		Node n = list.head;
+		while (n != null) {
+			Node temp = n.next;
+			if (temp != null && temp.data % 2 == 0) {
+				n.next = temp.next;
+			} else {
+				n = n.next;
+			}
+		}
+		list.printLinkedList();
+	}
+
+	public static void moveFirstNodeToEnd(LinkedList list) {
+		if (list.isEmpty()) {
+			return;
+		}
+		Node head = list.head;
+		Node p1 = list.head.next;
+		list.head = p1;
+		while (p1 != null) {
+			if (p1.next == null) {
+				Node node = new Node(head.data, null);
+				p1.next = node;
+				break;
+			}
+			p1 = p1.next;
+		}
+		list.printLinkedList();
+	}
+
+	public static void moveLastNodeToFront(LinkedList list) {
+		if (list.isEmpty()) {
+			return;
+		}
+		Node n = list.head;
+		while (n != null) {
+			if (n.next == list.tail) {
+				Node temp = list.tail;
+				n.next = null;
+				list.tail = n;
+				temp.next = list.head;
+				list.head = temp;
+				break;
+			}
+			n = n.next;
+		}
+		list.printLinkedList();
+	}
+
+	public static boolean isLinkedListPalindrom(LinkedList list) {
+		if (list.isEmpty()) {
+			return false;
+		}
+		Node p1 = list.head;
+		Node p2 = list.head.next;
+		while (p2 != null) {
+			p1 = p1.next;
+			p2 = p2.next != null ? p2.next.next : null;
+		}
+		Node n1 = null;
+		Node n2 = p1;
+		Node last = null;
+		while (n2 != null) {
+			Node temp = n2.next;
+			if (temp == null) {
+				last = n2;
+			}
+			n2.next = n1;
+			n1 = n2;
+			n2 = temp;
+		}
+		Node first = list.head;
+		while (last != null) {
+			if (first.data != last.data) {
+				System.out.println("isPalindrom: " + false);
+				return false;
+			}
+			first = first.next;
+			last = last.next;
+		}
+		System.out.println("isPalindrom: " + true);
+		return true;
+	}
+
 	public static void main(String[] args) throws Exception {
 		LinkedList list = new LinkedList();
-		list.insertAtTail(1);
-		list.insertAtTail(2);
-		list.insertAtTail(3);
-		list.insertAtTail(4);
-		list.insertAtTail(5);
-		list.insertAtTail(6);
-		list.insertAtTail(7);
+
 		list.insertAtTail(1);
 		list.insertAtTail(2);
 		list.insertAtTail(3);
@@ -286,17 +401,41 @@ public class LinkedList {
 		list.insertAtTail(8);
 		list.insertAtTail(9);
 		list.insertAtTail(10);
-		list.insertAtTail(1);
-		list.insertAtTail(2);
-		list.insertAtTail(3);
-		list.insertAtTail(1);
-		list.insertAtTail(3);
-		list.insertAtTail(3);
+
 		list.printLinkedList();
+		// Check if LinkedList is palindrome
+		isLinkedListPalindrom(list);
+		LinkedList palindrom = new LinkedList();
+		palindrom.insertAtTail(1);
+		palindrom.insertAtTail(2);
+		palindrom.insertAtTail(3);
+		palindrom.insertAtTail(3);
+		palindrom.insertAtTail(2);
+		palindrom.insertAtTail(1);
+		isLinkedListPalindrom(palindrom);
+
+
+		// Move the first element of the LinkedList to the end
+		moveFirstNodeToEnd(list);
+
+		// Move Last Element of LinkedList to Front
+		moveLastNodeToFront(list);
+
+		// print only odd nodes of LinkedList
+		printOddNodes(list);
+
+		// print only even nodes of LinkedList
+		printEvenNodes(list);
+
+		// Remove all even numbers from a LinkedList
+		removeEvenNumberFromLinkedList(list);
+
 		// delete nth node from the end
 		deleteNthNodeFromEnd(6, list);
+
 		// delete a node in LinkedList
 		removeNode(5, list);
+
 		// find the middle of the LinkedList
 		middleOfLinkedList(list);
 
